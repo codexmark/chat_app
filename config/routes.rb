@@ -1,14 +1,6 @@
 Rails.application.routes.draw do
-  get 'messages/create'
-  get 'conversations/create'
-  get 'conversations/show'
-  get 'conversations/destroy'
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
-
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
-  get "up" => "rails/health#show", as: :rails_health_check
-
-  # Defines the root path route ("/")
-  # root "posts#index"
+  post '/conversations', to: 'conversations#create'
+  get '/conversations/:id', to: 'conversations#show'
+  delete '/conversations/:id', to: 'conversations#destroy'
+  post '/conversations/:id/messages', to: 'messages#create'
 end
