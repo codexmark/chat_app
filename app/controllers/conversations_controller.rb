@@ -6,7 +6,6 @@ class ConversationsController < ApplicationController
     @message = Message.new(conversation_id: @conversation.id)
   end
 
-
   def create
     conversation = Conversation.create(participants: 0)
     render json: { id: conversation.id }

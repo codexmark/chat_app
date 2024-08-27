@@ -1,2 +1,5 @@
+# app/models/message.rb
 class Message < ApplicationRecord
-end
+    belongs_to :conversation
+    belongs_to :user
+  end
