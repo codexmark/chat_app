@@ -5,13 +5,92 @@
     <title>Conversa</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <style>
+      body {
+        background-color: #f9f9f9;
+      }
+      .chat-container {
+        max-width: 400px;
+        margin: 40px auto;
+        padding: 20px;
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      .chat-header {
+        background-color: #ff69b4; /* Magenta */
+        color: #fff;
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+      }
+      .chat-messages {
+        padding: 20px;
+        overflow-y: auto;
+        height: 300px;
+      }
+      .chat-message {
+        margin-bottom: 10px;
+      }
+      .chat-message .username {
+        font-weight: bold;
+      }
+    </style>
   </head>
   <body>
-    <div class="container mt-5">
-      <h2 class="text-center">Conversa</h2>
-      <p>ID da Conversa: <%= @conversation.id %></p>
-      <p>Usuário: <%= current_user.username %></p>
-      <!-- Adicione o código para exibir as mensagens da conversa aqui -->
+    <div class="chat-container">
+      <div class="chat-header">
+        <h2>Conversa</h2>
+      </div>
+      <div class="chat-messages" id="messages">
+        <% if @messages.present? %>
+          <% @messages.each do |message| %>
+            <div class="chat-message">
+              <span class="username"><%= message.user.username %>:</span> <%= message.content %>
+            </div>
+          <% end %>
+        <% else %>
+          <p>Nenhuma mensagem encontrada.</p>
+        <% end %>
+      </div>
+      <%= form_for @message, url: { controller: 'messages', action: 'create', id: @conversation.id }, method: :post, remote: true do |form| %>
+        <div class="form-group">
+          <input type="text" id="message_content" name="message[content]" class="form-control" placeholder="Type a message...">
+        </div>
+        <button type="submit" class="btn btn-primary">Send</button>
+      <% end %>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@rails/actioncable@7.0.3/app/assets/javascripts/cable.js"></script>
+    <script>
+      (function() {
+        var App = {};
+        App.cable = ActionCable.createConsumer();
+
+        App.conversationChannel = App.cable.subscriptions.create({ channel: "ConversationChannel", id: "<%= @conversation.id %>" }, {
+          connected: function() {},
+          disconnected: function() {},
+          received: function(data) {
+            var messages = document.getElementById('messages');
+            var message = document.createElement('div');
+            message.className = 'chat-message';
+            message.innerHTML = '<span class="username">' + data.user + '</span>: ' + data.message;
+            messages.appendChild(message);
+            messages.scrollTop = messages.scrollHeight;
+          },
+          speak: function(message) {
+            return this.perform('speak', { message: message });
+          }
+        });
+
+        document.getElementById('message-form').addEventListener('submit', function(e) {
+          e.preventDefault();
+          var messageInput = document.getElementById('message_content');
+          App.conversationChannel.speak(messageInput.value);
+          messageInput.value = '';
+        });
+      })();
+    </script>
   </body>
 </html>

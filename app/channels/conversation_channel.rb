@@ -1,12 +1,3 @@
-class ConversationChannel < ApplicationCable::Channel
-  def subscribed
-    # stream_from "some_channel"
-  end
-
-  def unsubscribed
-    # Any cleanup needed when channel is unsubscribed
-  end
-end
 # app/channels/conversation_channel.rb
 class ConversationChannel < ApplicationCable::Channel
   def subscribed
