@@ -1,8 +1,8 @@
-class CreateConversations < ActiveRecord::Migration[7.1]
+# db/migrate/20240827170117_create_conversations.rb
+class CreateConversations < ActiveRecord::Migration[7.0]
   def change
     create_table :conversations do |t|
-      t.string :id
-      t.integer :participants
+      t.integer :participants, default: 0
       t.text :messages
 
       t.timestamps
