@@ -1,5 +1,7 @@
 # config/routes.rb
 Rails.application.routes.draw do
+  get 'welcome/index'
+  get 'welcome/create'
   post '/conversations', to: 'conversations#create'
   get '/conversations/:id', to: 'conversations#show', as: :conversation
   delete '/conversations/:id', to: 'conversations#destroy'
